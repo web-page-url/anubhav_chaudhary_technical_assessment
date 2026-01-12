@@ -37,12 +37,15 @@ export const MathNode = createNodeClass({
       this.setState({ operation: e.target.value });
     };
 
-    const handleOperand1Change = (e) => {
-      this.setState({ operand1: parseFloat(e.target.value) || 0 });
+    const handleOperandChange = (key, e) => {
+      this.setState({ [key]: e.target.value });
     };
 
-    const handleOperand2Change = (e) => {
-      this.setState({ operand2: parseFloat(e.target.value) || 0 });
+    const adjustOperand = (key, amount) => {
+      this.setState((prev) => {
+        const val = parseFloat(prev[key]) || 0;
+        return { [key]: val + amount };
+      });
     };
 
     const operations = [
@@ -53,54 +56,88 @@ export const MathNode = createNodeClass({
       { value: 'power', label: '^' }
     ];
 
+    const buttonStyle = {
+      padding: '4px 8px',
+      cursor: 'pointer',
+      backgroundColor: 'var(--bg-tertiary)',
+      border: '1px solid var(--border-medium)',
+      borderRadius: '4px',
+      fontSize: '12px',
+      color: 'var(--text-primary)',
+      minWidth: '24px'
+    };
+
+    const inputStyle = {
+      width: '60px',
+      padding: '4px',
+      border: '1px solid var(--border-medium)',
+      borderRadius: '4px',
+      fontSize: '12px',
+      textAlign: 'center'
+    };
+
+    const renderInputRow = (label, key) => (
+      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', justifyContent: 'space-between' }}>
+        <span style={{ fontSize: '12px', color: 'var(--text-secondary)', minWidth: '60px' }}>{label}:</span>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+          <button onClick={() => adjustOperand(key, -1)} style={buttonStyle}>-</button>
+          <input
+            type="number"
+            value={this.state[key]}
+            onChange={(e) => handleOperandChange(key, e)}
+            style={inputStyle}
+          />
+          <button onClick={() => adjustOperand(key, 1)} style={buttonStyle}>+</button>
+        </div>
+      </div>
+    );
+
     return (
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', alignItems: 'center' }}>
-        <select
-          value={this.state.operation}
-          onChange={handleOperationChange}
-          style={{
-            padding: '2px 4px',
-            border: '1px solid #4caf50',
-            borderRadius: '3px',
-            fontSize: '14px',
-            fontWeight: 'bold',
-            backgroundColor: '#f1f8e9'
-          }}
-        >
-          {operations.map(op => (
-            <option key={op.value} value={op.value}>{op.label}</option>
-          ))}
-        </select>
-        <div style={{ display: 'flex', gap: '4px', alignItems: 'center' }}>
-          <input
-            type="number"
-            value={this.state.operand1}
-            onChange={handleOperand1Change}
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+          <label style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>Operation:</label>
+          <select
+            value={this.state.operation}
+            onChange={handleOperationChange}
             style={{
-              width: '40px',
-              padding: '2px 4px',
-              border: '1px solid #ccc',
-              borderRadius: '3px',
-              fontSize: '11px',
-              textAlign: 'center'
+              padding: '6px',
+              border: '1px solid var(--border-medium)',
+              borderRadius: 'var(--radius-sm)',
+              fontSize: '12px',
+              backgroundColor: 'var(--bg-primary)'
             }}
-          />
-          <span style={{ fontSize: '12px', color: '#666' }}>
-            {operations.find(op => op.value === this.state.operation)?.label}
-          </span>
-          <input
-            type="number"
-            value={this.state.operand2}
-            onChange={handleOperand2Change}
-            style={{
-              width: '40px',
-              padding: '2px 4px',
-              border: '1px solid #ccc',
-              borderRadius: '3px',
-              fontSize: '11px',
-              textAlign: 'center'
-            }}
-          />
+          >
+            {operations.map(op => (
+              <option key={op.value} value={op.value}>{op.label} ({op.value})</option>
+            ))}
+          </select>
+        </div>
+
+        {renderInputRow('Operand 1', 'operand1')}
+        {renderInputRow('Operand 2', 'operand2')}
+
+        <div style={{
+          padding: '8px',
+          backgroundColor: 'var(--bg-tertiary)',
+          borderRadius: 'var(--radius-sm)',
+          fontSize: '12px',
+          textAlign: 'center',
+          marginTop: '4px'
+        }}>
+          Result: <strong>
+            {(() => {
+              const a = parseFloat(this.state.operand1) || 0;
+              const b = parseFloat(this.state.operand2) || 0;
+              switch (this.state.operation) {
+                case 'add': return a + b;
+                case 'subtract': return a - b;
+                case 'multiply': return a * b;
+                case 'divide': return b !== 0 ? (a / b).toFixed(2) : 'Error';
+                case 'power': return Math.pow(a, b);
+                default: return 0;
+              }
+            })()}
+          </strong>
         </div>
       </div>
     );

@@ -28,16 +28,16 @@ export class BaseNode extends React.Component {
   // Override this method in subclasses to customize styling
   getNodeStyle() {
     return {
-      width: 220,
-      height: 100,
+      minWidth: 200,
+      maxWidth: 600,
+      minHeight: 80,
+      height: 'auto',
       border: '2px solid var(--border-medium)',
       borderRadius: 'var(--radius-lg)',
       backgroundColor: this.getNodeBackgroundColor(),
       boxShadow: 'var(--shadow-md)',
       display: 'flex',
       flexDirection: 'column',
-      justifyContent: 'center',
-      alignItems: 'center',
       padding: 'var(--space-md)',
       transition: 'all 0.2s ease-in-out',
       position: 'relative'

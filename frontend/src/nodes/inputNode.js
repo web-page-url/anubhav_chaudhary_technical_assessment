@@ -1,6 +1,6 @@
 // inputNode.js
 
-import { createNodeClass } from './baseNode';
+import { createNodeClass, BaseNode } from './baseNode';
 
 export const InputNode = createNodeClass({
   headerText: 'Input',
@@ -15,7 +15,17 @@ export const InputNode = createNodeClass({
       id: `${props.id}-value`
     }
   ],
-  renderContent: function(props) {
+  getNodeStyle: function () {
+    const baseStyle = BaseNode.prototype.getNodeStyle.call(this);
+    const nameLength = this.state.currName ? this.state.currName.length : 0;
+    const dynamicWidth = Math.max(200, 150 + nameLength * 8);
+
+    return {
+      ...baseStyle,
+      width: dynamicWidth,
+    };
+  },
+  renderContent: function (props) {
     const handleNameChange = (e) => {
       this.setState({ currName: e.target.value });
     };
