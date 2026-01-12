@@ -11,7 +11,7 @@ export const ConditionNode = createNodeClass({
   nodeStyle: {
     backgroundColor: 'var(--node-condition)',
     borderColor: 'var(--secondary-color)',
-    height: 120
+    // Removed fixed height to allow content to fit
   },
   handles: (props) => [
     {
@@ -23,13 +23,13 @@ export const ConditionNode = createNodeClass({
       type: 'source',
       position: 'right',
       id: `${props.id}-true`,
-      style: { top: '30%' }
+      style: { top: '35%' }
     },
     {
       type: 'source',
       position: 'right',
       id: `${props.id}-false`,
-      style: { top: '70%' }
+      style: { top: '75%' }
     }
   ],
   renderContent: function (props) {
@@ -63,7 +63,8 @@ export const ConditionNode = createNodeClass({
             border: '1px solid #9c27b0',
             borderRadius: '3px',
             fontSize: '11px',
-            backgroundColor: '#f8f5ff'
+            backgroundColor: '#f8f5ff',
+            width: '100%'
           }}
         >
           {operators.map(op => (
@@ -72,7 +73,7 @@ export const ConditionNode = createNodeClass({
         </select>
         <input
           type="text"
-          placeholder="Compare value"
+          placeholder="Value"
           value={this.state.compareValue}
           onChange={handleCompareValueChange}
           style={{
@@ -80,21 +81,12 @@ export const ConditionNode = createNodeClass({
             border: '1px solid #ccc',
             borderRadius: '3px',
             fontSize: '11px',
-            width: '80px',
+            width: '100%',
             textAlign: 'center'
           }}
         />
-        <div style={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          width: '100%',
-          fontSize: '9px',
-          color: '#666',
-          marginTop: '4px'
-        }}>
-          <span>True →</span>
-          <span>False →</span>
-        </div>
+
+
       </div>
     );
   }
