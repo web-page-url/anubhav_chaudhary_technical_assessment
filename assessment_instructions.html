@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VectorShift Frontend Technical Assessment</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 40px;
+            margin-bottom: 30px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            color: #2c3e50;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
+        .header .subtitle {
+            color: #7f8c8d;
+            font-size: 1.1rem;
+            margin-bottom: 20px;
+        }
+
+        .intro {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .parts {
+            display: grid;
+            gap: 30px;
+        }
+
+        .part {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .part:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+        }
+
+        .part h2 {
+            color: #2c3e50;
+            font-size: 1.8rem;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 3px solid #3498db;
+            display: inline-block;
+        }
+
+        .part h3 {
+            color: #34495e;
+            font-size: 1.3rem;
+            margin: 20px 0 15px 0;
+        }
+
+        .part p {
+            margin-bottom: 15px;
+            color: #555;
+        }
+
+        .code-snippet {
+            background: #f8f9fa;
+            border-left: 4px solid #3498db;
+            padding: 15px;
+            margin: 15px 0;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            overflow-x: auto;
+        }
+
+        .highlight {
+            background: #fff3cd;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-weight: bold;
+        }
+
+        .contact {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 30px;
+            text-align: center;
+            margin-top: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .contact a {
+            color: #3498db;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .contact a:hover {
+            text-decoration: underline;
+        }
+
+        .steps {
+            background: #ecf0f1;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+
+        .steps ol {
+            margin-left: 20px;
+        }
+
+        .steps li {
+            margin-bottom: 8px;
+            color: #2c3e50;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+            }
+
+            .header {
+                padding: 25px;
+            }
+
+            .header h1 {
+                font-size: 2rem;
+            }
+
+            .part {
+                padding: 20px;
+            }
+
+            .part h2 {
+                font-size: 1.5rem;
+            }
+
+            .parts {
+                gap: 20px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .header h1 {
+                font-size: 1.8rem;
+            }
+
+            .header .subtitle {
+                font-size: 1rem;
+            }
+
+            .part h2 {
+                font-size: 1.3rem;
+            }
+
+            .part {
+                padding: 15px;
+            }
+        }
+
+        .floating-nav {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+            border-radius: 10px;
+            padding: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+            display: none;
+        }
+
+        .floating-nav a {
+            display: block;
+            color: #3498db;
+            text-decoration: none;
+            padding: 5px 10px;
+            margin: 2px 0;
+            border-radius: 5px;
+            transition: background 0.3s ease;
+        }
+
+        .floating-nav a:hover {
+            background: #3498db;
+            color: white;
+        }
+
+        @media (min-width: 769px) {
+            .floating-nav {
+                display: block;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav class="floating-nav" id="floatingNav">
+        <a href="#part1">Part 1</a>
+        <a href="#part2">Part 2</a>
+        <a href="#part3">Part 3</a>
+        <a href="#part4">Part 4</a>
+    </nav>
+
+    <div class="container">
+        <header class="header">
+            <h1>VectorShift</h1>
+            <p class="subtitle">Frontend Technical Assessment Instructions</p>
+            <p>Thank you for taking the time to interview with us at VectorShift! As part of the interview process, we would like you to complete a frontend technical assessment.</p>
+        </header>
+
+        <section class="intro">
+            <p>You can find all files necessary for the assignment in the <span class="highlight">/frontend/src</span> and <span class="highlight">/backend</span> folders. Feel free to make any changes to the provided files, including adding new files, deleting existing files, installing new packages, and modifying any provided code. Please use <span class="highlight">JavaScript/React</span> for the frontend and <span class="highlight">Python/FastAPI</span> for the backend.</p>
+
+            <p>The assessment consists of four parts, which are detailed below. You are encouraged to read all parts of the assessment before starting so that you can plan your approach.</p>
+
+            <div class="steps">
+                <p><strong>How to run the project:</strong></p>
+                <ol>
+                    <li>You can run the frontend code by navigating to the <span class="highlight">/frontend</span> directory and running <span class="highlight">npm i</span> and <span class="highlight">npm start</span>.</li>
+                    <li>You can run the backend code by navigating to the <span class="highlight">/backend</span> directory and running <span class="highlight">uvicorn main:app --reload</span>.</li>
+                </ol>
+            </div>
+        </section>
+
+        <div class="parts">
+            <section class="part" id="part1">
+                <h2>Part 1: Node Abstraction</h2>
+                <p>In <span class="highlight">/frontend/src</span>, you will find a folder called <span class="highlight">nodes</span>. This folder contains JavaScript files for four types of nodes (inputs, outputs, LLMs, and text). Each of these nodes contains different text, content, and input/output connections (called "Handles"), but there is also a significant amount of shared code between nodes.</p>
+
+                <p>Currently, you could create a new node by copying an existing node into a new file and making modifications, but this approach ends up rewriting significant amounts of code. While this approach is tractable for a small number of nodes, it becomes difficult to maintain as the number of nodes increases.</p>
+
+                <h3>Your Task:</h3>
+                <p>Your task is to create an abstraction for these nodes that speeds up your ability to create new nodes and apply styles across nodes in the future.</p>
+
+                <p>Once you have created your abstraction, make <span class="highlight">five new nodes</span> of your choosing to demonstrate how it works. Don't spend too long worrying about what the nodes actually do; you should use this as an opportunity to showcase the flexibility/efficiency of your node abstraction.</p>
+            </section>
+
+            <section class="part" id="part2">
+                <h2>Part 2: Styling</h2>
+                <p>The frontend files you receive do not apply any significant styling. Your task is to style the various components into an appealing, unified design. You can use VectorShift's existing styles as inspiration if you'd like, but you are also free to create your own design from the ground-up. You can use whatever React packages/libraries that you would like.</p>
+            </section>
+
+            <section class="part" id="part3">
+                <h2>Part 3: Text Node Logic</h2>
+                <p>The Text node included in the <span class="highlight">/frontend/src/nodes</span> has a field for text input. We want to improve the functionality of this text input in two ways.</p>
+
+                <h3>Requirements:</h3>
+                <ol>
+                    <li><strong>Dynamic Sizing:</strong> We want the width and height of the Text node to change as the user enters more text into the text input, improving visibility for what the user types in.</li>
+                    <li><strong>Variable Handles:</strong> We want to allow users to define variables in their text input. When a user enters a valid JavaScript variable name surrounded by double curly brackets (e.g., "<span class="highlight">{{ input }}</span>"), we want to create a new Handle on the left side of the Text node that corresponds to the variable.</li>
+                </ol>
+
+                <p>For examples of what this should look like, you can try using a VectorShift Text node or watching Tutorials using the VectorShift Text node.</p>
+            </section>
+
+            <section class="part" id="part4">
+                <h2>Part 4: Backend Integration</h2>
+                <p>In the <span class="highlight">/backend</span> folder, you will find a very simple Python/FastAPI backend. Your task is to build an integration between the frontend you completed and this simple backend.</p>
+
+                <h3>Frontend Changes:</h3>
+                <p>On the frontend, you should update <span class="highlight">/frontend/src/submit.js</span> to send the nodes and edges of the pipeline to the <span class="highlight">/pipelines/parse</span> endpoint in the backend when the button is clicked.</p>
+
+                <h3>Backend Changes:</h3>
+                <p>On the backend, you should update the <span class="highlight">/pipelines/parse</span> endpoint in <span class="highlight">/backend/main.py</span> to calculate the number of nodes and edges in the pipeline. You should also check whether the nodes and edges in the pipeline form a directed acyclic graph (DAG).</p>
+
+                <div class="code-snippet">
+Expected Response Format:
+{
+  "num_nodes": int,
+  "num_edges": int,
+  "is_dag": bool
+}
+                </div>
+
+                <h3>Final Result:</h3>
+                <p>Once you have updated the button and the endpoint, you should create an alert that triggers when the frontend receives a response from the backend. This alert should display the values of <span class="highlight">num_nodes</span>, <span class="highlight">num_edges</span>, and <span class="highlight">is_dag</span> in a user-friendly manner.</p>
+
+                <p>The final result should allow a user to create a pipeline, click submit, and then receive an alert with the number of nodes/edges as well as whether the pipeline is a DAG.</p>
+            </section>
+        </div>
+
+        <section class="contact">
+            <p>Feel free to reach out to <a href="mailto:recruiting@vectorshift.ai">recruiting@vectorshift.ai</a> if you have any questions.</p>
+        </section>
+    </div>
+
+    <script>
+        // Smooth scrolling for navigation links
+        document.querySelectorAll('.floating-nav a').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                target.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'start'
+                });
+            });
+        });
+
+        // Add scroll effect to header
+        window.addEventListener('scroll', function() {
+            const header = document.querySelector('.header');
+            if (window.scrollY > 50) {
+                header.style.transform = 'scale(0.95)';
+                header.style.opacity = '0.9';
+            } else {
+                header.style.transform = 'scale(1)';
+                header.style.opacity = '1';
+            }
+        });
+
+        // Intersection Observer for fade-in animations
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver(function(entries) {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                }
+            });
+        }, observerOptions);
+
+        // Initially hide parts and observe them
+        document.querySelectorAll('.part').forEach(part => {
+            part.style.opacity = '0';
+            part.style.transform = 'translateY(30px)';
+            part.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+            observer.observe(part);
+        });
+    </script>
+</body>
+</html>
