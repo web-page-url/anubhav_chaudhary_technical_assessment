@@ -35,14 +35,22 @@ export const TextNode = createNodeClass({
 
     return handles;
   },
+  componentDidMount: function () {
+    if (this.textareaRef) {
+      this.textareaRef.style.height = 'auto';
+      this.textareaRef.style.height = `${this.textareaRef.scrollHeight}px`;
+    }
+  },
   componentDidUpdate: function (prevProps, prevState) {
     if (prevState.currText !== this.state.currText) {
       this.detectVariables();
+      if (this.textareaRef) {
+        this.textareaRef.style.height = 'auto';
+        this.textareaRef.style.height = `${this.textareaRef.scrollHeight}px`;
+      }
     }
   },
   detectVariables: function () {
-    // Matches valid JS variable names inside {{ }}
-    // A valid JS variable name starts with a letter, $, or _, followed by letters, digits, $, or _
     const variableRegex = /\{\{([a-zA-Z_$][a-zA-Z0-9_$]*)\}\}/g;
     const variables = [];
     let match;
@@ -58,21 +66,15 @@ export const TextNode = createNodeClass({
     const baseStyle = BaseNode.prototype.getNodeStyle.call(this);
     const text = this.state.currText;
 
-    // Dynamic height based on lines
+    // Estimate width based on characters, bounded
     const lines = text.split('\n');
-    const lineCount = lines.length;
     const longestLine = Math.max(...lines.map(l => l.length), 0);
-
-    // Estimate height: base + (lines * line-height) + padding + footer
-    const dynamicHeight = Math.max(120, 100 + lineCount * 22 + (this.state.variables.length > 0 ? 30 : 0));
-
-    // Estimate width: base + (longest-line * char-width)
     const dynamicWidth = Math.max(250, Math.min(600, 150 + longestLine * 8));
 
     return {
       ...baseStyle,
-      height: dynamicHeight,
       width: dynamicWidth,
+      // Remove fixed height to allow auto-expansion
       backgroundColor: 'var(--node-text)',
       borderColor: 'var(--border-medium)'
     };
@@ -80,22 +82,24 @@ export const TextNode = createNodeClass({
   renderContent: function (props) {
     const handleTextChange = (e) => {
       const newText = e.target.value;
-      this.setState({ currText: newText }, () => {
-        this.detectVariables();
-      });
+      this.setState({ currText: newText });
+      // Auto-resize
+      e.target.style.height = 'auto';
+      e.target.style.height = `${e.target.scrollHeight}px`;
     };
 
     return (
-      <div style={{ width: '100%', height: '100%' }}>
+      <div style={{ width: '100%', display: 'flex', flexDirection: 'column' }}>
         <label style={{
           display: 'flex',
           flexDirection: 'column',
           fontSize: 'var(--font-size-sm)',
           color: 'var(--text-secondary)',
-          height: '100%'
+          width: '100%'
         }}>
           Text:
           <textarea
+            ref={(el) => { this.textareaRef = el; }}
             value={this.state.currText}
             onChange={handleTextChange}
             placeholder="Enter your text here. Use {{variable}} syntax for dynamic inputs."
@@ -107,11 +111,12 @@ export const TextNode = createNodeClass({
               fontSize: 'var(--font-size-sm)',
               fontFamily: 'inherit',
               resize: 'none',
-              height: 'calc(100% - 40px)',
+              minHeight: '80px',
               width: '100%',
               lineHeight: 1.4,
               outline: 'none',
-              transition: 'border-color 0.2s ease'
+              transition: 'border-color 0.2s ease',
+              overflow: 'hidden'
             }}
             onFocus={(e) => {
               e.target.style.borderColor = 'var(--primary-color)';
@@ -125,15 +130,12 @@ export const TextNode = createNodeClass({
         {/* Variable indicators */}
         {this.state.variables.length > 0 && (
           <div style={{
-            position: 'absolute',
-            bottom: '8px',
-            left: '8px',
-            right: '8px',
+            marginTop: '8px',
             display: 'flex',
             flexWrap: 'wrap',
             gap: '4px'
           }}>
-            {this.state.variables.map((variable, index) => (
+            {this.state.variables.map((variable) => (
               <span
                 key={variable}
                 style={{

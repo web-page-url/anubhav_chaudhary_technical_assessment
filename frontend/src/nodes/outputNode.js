@@ -15,7 +15,7 @@ export const OutputNode = createNodeClass({
       id: `${props.id}-value`
     }
   ],
-  renderContent: function(props) {
+  renderContent: function (props) {
     const handleNameChange = (e) => {
       this.setState({ currName: e.target.value });
     };
