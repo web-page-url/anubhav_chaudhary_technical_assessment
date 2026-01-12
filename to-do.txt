@@ -62,3 +62,14 @@ display the values of num_nodes, num_edges, and is_dag in a user-friendly manner
 The final result should allow a user to create a pipeline, click submit, and then 
 receive an alert with the number of nodes/edges as well as whether the pipeline is a 
 DAG.
+
+
+
+Additional Feature.
+If we were to add a "Run" feature, the flow would be:
+
+You click "Run".
+The system sees you have an Input Node named input_1.
+It pops up a box: "Please enter value for input_1".
+You type "hello".
+It passes "hello" to the Text Node, which passes it to the Transform Node, which turns it into "HELLO".

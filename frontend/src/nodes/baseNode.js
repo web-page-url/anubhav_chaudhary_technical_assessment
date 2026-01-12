@@ -2,6 +2,7 @@
 
 import React from 'react';
 import { Handle, Position } from 'reactflow';
+import { useStore } from '../store';
 
 export class BaseNode extends React.Component {
   constructor(props) {
@@ -61,6 +62,38 @@ export class BaseNode extends React.Component {
 
     return (
       <div style={nodeStyle}>
+        <button
+          onClick={() => useStore.getState().deleteNode(id)}
+          style={{
+            position: 'absolute',
+            top: '4px',
+            right: '4px',
+            background: 'transparent',
+            border: 'none',
+            cursor: 'pointer',
+            fontSize: '16px',
+            lineHeight: '1',
+            color: 'var(--text-secondary, #666)',
+            opacity: 0.5,
+            padding: '4px',
+            zIndex: 100,
+            transition: 'all 0.2s',
+            borderRadius: '50%'
+          }}
+          onMouseEnter={(e) => {
+            e.target.style.opacity = '1';
+            e.target.style.color = '#ff4d4f';
+            e.target.style.backgroundColor = 'rgba(255, 77, 79, 0.1)';
+          }}
+          onMouseLeave={(e) => {
+            e.target.style.opacity = '0.5';
+            e.target.style.color = 'var(--text-secondary, #666)';
+            e.target.style.backgroundColor = 'transparent';
+          }}
+          title="Delete Node"
+        >
+          ✕
+        </button>
         {handles.map(handle => (
           <Handle
             key={handle.id}

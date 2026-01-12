@@ -15,6 +15,10 @@ export const OutputNode = createNodeClass({
       id: `${props.id}-value`
     }
   ],
+  nodeStyle: {
+    backgroundColor: 'var(--node-output)',
+    borderColor: 'var(--primary-light)'
+  },
   renderContent: function (props) {
     const handleNameChange = (e) => {
       this.setState({ currName: e.target.value });

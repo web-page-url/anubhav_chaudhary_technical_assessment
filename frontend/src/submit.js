@@ -13,6 +13,26 @@ export const SubmitButton = () => {
 
   const handleSubmit = async () => {
     try {
+      // 1. Identify Input Nodes
+      // We look for nodes that have 'Input' in their type or id as a heuristic
+      // In the provided inputNode.js, the type seems to be 'customInput' (or we check the react flow type)
+      // Let's filter by checking if the id starts with 'customInput' or type includes 'Input'
+      const inputNodes = nodes.filter(node => 
+        node.type.includes('customInput') || node.id.includes('customInput') || node.data?.nodeType === 'Input'
+      );
+
+      const inputValues = {};
+      
+      // 2. Prompt user for each input
+      for (const node of inputNodes) {
+        const label = node.data?.inputName || node.id;
+        const userInput = prompt(`Enter value for Input Node "${label}":`);
+        if (userInput === null) {
+          return; // User cancelled
+        }
+        inputValues[node.id] = userInput;
+      }
+
       const pipelineData = {
         nodes: nodes.map(node => ({
           id: node.id,
@@ -26,10 +46,12 @@ export const SubmitButton = () => {
           target: edge.target,
           sourceHandle: edge.sourceHandle,
           targetHandle: edge.targetHandle
-        }))
+        })),
+        inputs: inputValues // Add inputs to the payload
       };
 
-      const response = await fetch('http://localhost:8000/pipelines/parse', {
+      // 3. Send to Execute Endpoint
+      const response = await fetch('http://localhost:8000/pipelines/execute', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded',
@@ -45,21 +67,32 @@ export const SubmitButton = () => {
 
       const result = await response.json();
 
-      // Display the results in a user-friendly alert
-      const message = `
-📊 Pipeline Analysis Results:
+      if (result.error) {
+        alert(`❌ Error: ${result.error}`);
+        return;
+      }
 
-🔢 Number of Nodes: ${result.num_nodes}
-🔗 Number of Edges: ${result.num_edges}
-${result.is_dag ? '✅' : '❌'} DAG Status: ${result.is_dag ? 'Valid DAG' : 'Not a DAG'}
+      // 4. Display Results
+      // Format the results prettily
+      let resultMessage = '✅ Pipeline Executed Successfully!\n\n';
+      
+      // Show explicit Output Node results first
+      const outputNodes = nodes.filter(node => node.type.includes('Output') || node.id.includes('output'));
+      if (outputNodes.length > 0) {
+        resultMessage += '🏁 Output Nodes:\n';
+        outputNodes.forEach(node => {
+           resultMessage += `   - ${node.data.label || node.id}: ${result.results[node.id]}\n`;
+        });
+        resultMessage += '\n';
+      }
 
-${result.is_dag
-  ? 'Great! Your pipeline forms a valid directed acyclic graph.'
-  : 'Warning: Your pipeline contains cycles and is not a valid DAG.'
-}
-      `.trim();
+      // Show specific node results for debugging/visibility
+      resultMessage += '🔍 All Node Results:\n';
+      for (const [nodeId, output] of Object.entries(result.results)) {
+         resultMessage += `   • ${nodeId}: ${output}\n`;
+      }
 
-      alert(message);
+      alert(resultMessage);
 
     } catch (error) {
       console.error('Error submitting pipeline:', error);
@@ -115,7 +148,7 @@ ${result.is_dag
           }
         }}
       >
-        🚀 Submit Pipeline
+        ▶️ Run Pipeline
       </button>
     </div>
   );

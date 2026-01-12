@@ -15,6 +15,10 @@ export const InputNode = createNodeClass({
       id: `${props.id}-value`
     }
   ],
+  nodeStyle: {
+    backgroundColor: 'var(--node-input)',
+    borderColor: 'var(--primary-light)'
+  },
   getNodeStyle: function () {
     const baseStyle = BaseNode.prototype.getNodeStyle.call(this);
     const nameLength = this.state.currName ? this.state.currName.length : 0;

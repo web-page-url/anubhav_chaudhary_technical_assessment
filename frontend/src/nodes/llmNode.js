@@ -4,18 +4,22 @@ import { createNodeClass } from './baseNode';
 
 export const LLMNode = createNodeClass({
   headerText: 'LLM',
+  nodeStyle: {
+    backgroundColor: 'var(--node-llm)',
+    borderColor: 'var(--accent-color)'
+  },
   handles: (props) => [
     {
       type: 'target',
       position: 'left',
       id: `${props.id}-system`,
-      style: { top: `${100/3}%` }
+      style: { top: `${100 / 3}%` }
     },
     {
       type: 'target',
       position: 'left',
       id: `${props.id}-prompt`,
-      style: { top: `${200/3}%` }
+      style: { top: `${200 / 3}%` }
     },
     {
       type: 'source',
@@ -23,7 +27,7 @@ export const LLMNode = createNodeClass({
       id: `${props.id}-response`
     }
   ],
-  renderContent: function(props) {
+  renderContent: function (props) {
     return (
       <div style={{
         fontSize: '12px',
