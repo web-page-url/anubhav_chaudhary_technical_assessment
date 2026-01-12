@@ -5,7 +5,7 @@ import { createNodeClass, BaseNode } from './baseNode';
 export const TextNode = createNodeClass({
   headerText: 'Text',
   initialState: (props) => ({
-    currText: props.data?.text || '{{input}}',
+    currText: props.data?.currText || props.data?.text || '{{input}}',
     variables: []
   }),
   nodeStyle: {

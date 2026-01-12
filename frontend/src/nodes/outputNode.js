@@ -5,7 +5,7 @@ import { createNodeClass } from './baseNode';
 export const OutputNode = createNodeClass({
   headerText: 'Output',
   initialState: (props) => ({
-    currName: props.data?.outputName || props.id.replace('customOutput-', 'output_'),
+    outputName: props.data?.outputName || props.id.replace('customOutput-', 'output_'),
     outputType: props.data?.outputType || 'Text'
   }),
   handles: (props) => [
@@ -21,7 +21,7 @@ export const OutputNode = createNodeClass({
   },
   renderContent: function (props) {
     const handleNameChange = (e) => {
-      this.setState({ currName: e.target.value });
+      this.setState({ outputName: e.target.value });
     };
 
     const handleTypeChange = (e) => {
@@ -39,7 +39,7 @@ export const OutputNode = createNodeClass({
           Name:
           <input
             type="text"
-            value={this.state.currName}
+            value={this.state.outputName}
             onChange={handleNameChange}
             className="node-input-field"
           />

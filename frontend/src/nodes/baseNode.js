@@ -172,6 +172,12 @@ export const createNodeClass = (config) => {
       if (config.componentDidUpdate) {
         config.componentDidUpdate.call(this, prevProps, prevState);
       }
+
+      // Automatically sync local state to global ReactFlow data
+      // This ensures that when the user clicks 'Run', the latest data is sent to backend
+      if (prevState !== this.state) {
+        useStore.getState().updateNodeData(this.props.id, this.state);
+      }
     }
   };
 };

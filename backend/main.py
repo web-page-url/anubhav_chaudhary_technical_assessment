@@ -148,13 +148,14 @@ def execute_pipeline(pipeline: str = Form(...)): # Accept pipeline as a string
             node_inputs = {} # handle_id -> value
             for edge in incoming_edges[node_id]:
                 # edge['sourceHandle'] gives us which output of the parent was used
-                # edge['targetHandle'] gives us which input of the current node it goes to
+                source_result = results.get(edge['source'])
                 
-                # Simple logic: Single output from source?
-                source_val = results.get(edge['source'])
+                # Handle Multi-Output Nodes (like Condition/Filter)
+                if isinstance(source_result, dict) and 'sourceHandle' in edge:
+                    source_val = source_result.get(edge['sourceHandle'])
+                else:
+                    source_val = source_result
                 
-                # In robust systems, we'd map handles strictly. 
-                # For this assesssment, we might need to be flexible or check handle IDs.
                 handle_id = edge['targetHandle']
                 node_inputs[handle_id] = source_val
 
@@ -196,13 +197,21 @@ def execute_pipeline(pipeline: str = Form(...)): # Accept pipeline as a string
                 input_val = next(iter(node_inputs.values()), "")
                 transform_type = node['data'].get('transformation', 'uppercase')
                 
-                if isinstance(input_val, str):
-                    if transform_type == 'uppercase':
-                        results[node_id] = input_val.upper()
-                    elif transform_type == 'lowercase':
-                        results[node_id] = input_val.lower()
-                    else:
-                        results[node_id] = input_val # Fallback
+                # safe string conversion
+                str_val = str(input_val) if input_val is not None else ""
+
+                if transform_type == 'uppercase':
+                    results[node_id] = str_val.upper()
+                elif transform_type == 'lowercase':
+                    results[node_id] = str_val.lower()
+                elif transform_type == 'capitalize':
+                    results[node_id] = str_val.capitalize()
+                elif transform_type == 'reverse':
+                    results[node_id] = str_val[::-1]
+                elif transform_type == 'trim':
+                    results[node_id] = str_val.strip()
+                elif transform_type == 'length':
+                    results[node_id] = len(str_val)
                 else:
                     results[node_id] = input_val
 
@@ -242,6 +251,83 @@ def execute_pipeline(pipeline: str = Form(...)): # Accept pipeline as a string
                  
                  results[node_id] = res
 
+            elif 'condition' in node_type:
+                # Logic: Compare input against value
+                node_input_val = next(iter(node_inputs.values()), None) # Should come from `${id}-input`
+                operator = node['data'].get('operator', 'equals')
+                compare_value = node['data'].get('compareValue', '')
+                
+                # Convert compare_value to match input type if possible
+                try:
+                    if isinstance(node_input_val, (int, float)):
+                        compare_value = float(compare_value)
+                except:
+                    pass
+
+                is_true = False
+                if operator == 'equals':
+                    is_true = node_input_val == compare_value
+                elif operator == 'notEquals':
+                    is_true = node_input_val != compare_value
+                elif operator == 'greaterThan':
+                    try: is_true = float(node_input_val) > float(compare_value)
+                    except: is_true = False
+                elif operator == 'lessThan':
+                     try: is_true = float(node_input_val) < float(compare_value)
+                     except: is_true = False
+                elif operator == 'greaterEqual':
+                     try: is_true = float(node_input_val) >= float(compare_value)
+                     except: is_true = False
+                elif operator == 'lessEqual':
+                     try: is_true = float(node_input_val) <= float(compare_value)
+                     except: is_true = False
+                elif operator == 'contains':
+                     is_true = str(compare_value) in str(node_input_val)
+                elif operator == 'notContains':
+                     is_true = str(compare_value) not in str(node_input_val)
+
+                # Output to specific handles
+                # If true, pass value to 'true' handle, else to 'false' handle
+                results[node_id] = {
+                    f"{node_id}-true": node_input_val if is_true else None,
+                    f"{node_id}-false": node_input_val if not is_true else None
+                }
+            
+            elif 'filter' in node_type:
+                # Logic: Pass validation or fail
+                node_input_val = next(iter(node_inputs.values()), None)
+                condition = node['data'].get('condition', 'contains')
+                filter_value = node['data'].get('filterValue', '')
+                
+                is_pass = False
+                # Reusing similar logic or slightly different depending on requirements
+                # Basic string/number comparisons similar to condition
+                try:
+                    if isinstance(node_input_val, (int, float)):
+                         try: filter_value = float(filter_value)
+                         except: pass
+                except: pass
+
+                if condition == 'equals':
+                     is_pass = node_input_val == filter_value
+                elif condition == 'contains':
+                     is_pass = str(filter_value) in str(node_input_val)
+                elif condition == 'startsWith':
+                     is_pass = str(node_input_val).startswith(str(filter_value))
+                elif condition == 'endsWith':
+                     is_pass = str(node_input_val).endswith(str(filter_value))
+                elif condition == 'greaterThan':
+                     try: is_pass = float(node_input_val) > float(filter_value)
+                     except: is_pass = False
+                elif condition == 'lessThan':
+                     try: is_pass = float(node_input_val) < float(filter_value)
+                     except: is_pass = False
+
+                results[node_id] = {
+                    f"{node_id}-pass": node_input_val if is_pass else None,
+                    f"{node_id}-fail": node_input_val if not is_pass else None
+                }
+
             elif 'llm' in node_type:
                 # Mock LLM
                 results[node_id] = "This is a mock LLM response."
@@ -253,10 +339,15 @@ def execute_pipeline(pipeline: str = Form(...)): # Accept pipeline as a string
             else:
                  # Default pass-through
                  results[node_id] = next(iter(node_inputs.values()), None)
-
+        
+        # Clean up results for final output
+        # (Optional: flatten single-key dicts or keep as is? 
+        # The frontend Alert just shows the raw JSON, so seeing a dict is fine,
+        # but for 'is_dag' etc we are good)
+        
         return {
             'status': 'success',
-            'results': results,
+            'results': results, # This will contain dicts for condition/filter nodes
             'num_nodes': len(nodes),
             'num_edges': len(edges),
             'is_dag': True 

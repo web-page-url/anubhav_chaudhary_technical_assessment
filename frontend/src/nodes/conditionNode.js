@@ -73,7 +73,22 @@ export const ConditionNode = createNodeClass({
           style={{ textAlign: 'center' }}
         />
 
-
+        <div style={{
+          position: 'absolute',
+          right: '16px',
+          top: '35%',
+          transform: 'translateY(-50%)',
+          fontSize: '10px',
+          color: 'var(--text-secondary)'
+        }}>True</div>
+        <div style={{
+          position: 'absolute',
+          right: '16px',
+          top: '75%',
+          transform: 'translateY(-50%)',
+          fontSize: '10px',
+          color: 'var(--text-secondary)'
+        }}>False</div>
       </div>
     );
   }

@@ -5,7 +5,7 @@ import { createNodeClass, BaseNode } from './baseNode';
 export const InputNode = createNodeClass({
   headerText: 'Input',
   initialState: (props) => ({
-    currName: props.data?.inputName || props.id.replace('customInput-', 'input_'),
+    inputName: props.data?.inputName || props.id.replace('customInput-', 'input_'),
     inputType: props.data?.inputType || 'Text'
   }),
   handles: (props) => [
@@ -21,7 +21,7 @@ export const InputNode = createNodeClass({
   },
   getNodeStyle: function () {
     const baseStyle = BaseNode.prototype.getNodeStyle.call(this);
-    const nameLength = this.state.currName ? this.state.currName.length : 0;
+    const nameLength = this.state.inputName ? this.state.inputName.length : 0;
     const dynamicWidth = Math.max(200, 150 + nameLength * 8);
 
     return {
@@ -31,7 +31,7 @@ export const InputNode = createNodeClass({
   },
   renderContent: function (props) {
     const handleNameChange = (e) => {
-      this.setState({ currName: e.target.value });
+      this.setState({ inputName: e.target.value });
     };
 
     const handleTypeChange = (e) => {
@@ -49,7 +49,7 @@ export const InputNode = createNodeClass({
           Name:
           <input
             type="text"
-            value={this.state.currName}
+            value={this.state.inputName}
             onChange={handleNameChange}
             className="node-input-field"
           />

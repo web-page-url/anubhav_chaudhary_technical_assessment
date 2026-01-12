@@ -67,10 +67,22 @@ export const FilterNode = createNodeClass({
           onChange={handleFilterValueChange}
           className="node-input-field"
         />
-        <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '10px', color: '#666' }}>
-          <span>Pass →</span>
-          <span>Fail →</span>
-        </div>
+        <div style={{
+          position: 'absolute',
+          right: '16px',
+          top: '30%',
+          transform: 'translateY(-50%)',
+          fontSize: '10px',
+          color: 'var(--text-secondary)'
+        }}>Pass</div>
+        <div style={{
+          position: 'absolute',
+          right: '16px',
+          top: '70%',
+          transform: 'translateY(-50%)',
+          fontSize: '10px',
+          color: 'var(--text-secondary)'
+        }}>Fail</div>
       </div>
     );
   }

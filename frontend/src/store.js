@@ -57,4 +57,14 @@ export const useStore = create((set, get) => ({
       }),
     });
   },
+  updateNodeData: (nodeId, data) => {
+    set({
+      nodes: get().nodes.map((node) => {
+        if (node.id === nodeId) {
+          node.data = { ...node.data, ...data };
+        }
+        return node;
+      }),
+    });
+  },
 }));
