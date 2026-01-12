@@ -1,7 +1,9 @@
 // submit.js
 
+import { useState } from 'react';
 import { useStore } from './store';
 import { shallow } from 'zustand/shallow';
+import { PipelineResultsModal } from './PipelineResultsModal';
 
 const selector = (state) => ({
   nodes: state.nodes,
@@ -10,19 +12,17 @@ const selector = (state) => ({
 
 export const SubmitButton = () => {
   const { nodes, edges } = useStore(selector, shallow);
+  const [modalState, setModalState] = useState({ isOpen: false, data: null, error: null });
 
   const handleSubmit = async () => {
     try {
       // 1. Identify Input Nodes
-      // We look for nodes that have 'Input' in their type or id as a heuristic
-      // In the provided inputNode.js, the type seems to be 'customInput' (or we check the react flow type)
-      // Let's filter by checking if the id starts with 'customInput' or type includes 'Input'
-      const inputNodes = nodes.filter(node => 
+      const inputNodes = nodes.filter(node =>
         node.type.includes('customInput') || node.id.includes('customInput') || node.data?.nodeType === 'Input'
       );
 
       const inputValues = {};
-      
+
       // 2. Prompt user for each input
       for (const node of inputNodes) {
         const label = node.data?.inputName || node.id;
@@ -47,7 +47,7 @@ export const SubmitButton = () => {
           sourceHandle: edge.sourceHandle,
           targetHandle: edge.targetHandle
         })),
-        inputs: inputValues // Add inputs to the payload
+        inputs: inputValues
       };
 
       // 3. Send to Execute Endpoint
@@ -68,88 +68,81 @@ export const SubmitButton = () => {
       const result = await response.json();
 
       if (result.error) {
-        alert(`❌ Error: ${result.error}`);
+        setModalState({ isOpen: true, data: null, error: result.error });
         return;
       }
 
-      // 4. Display Results
-      // Format the results prettily
-      let resultMessage = '✅ Pipeline Executed Successfully!\n\n';
-      
-      // Show explicit Output Node results first
-      const outputNodes = nodes.filter(node => node.type.includes('Output') || node.id.includes('output'));
-      if (outputNodes.length > 0) {
-        resultMessage += '🏁 Output Nodes:\n';
-        outputNodes.forEach(node => {
-           resultMessage += `   - ${node.data.label || node.id}: ${result.results[node.id]}\n`;
-        });
-        resultMessage += '\n';
-      }
-
-      // Show specific node results for debugging/visibility
-      resultMessage += '🔍 All Node Results:\n';
-      for (const [nodeId, output] of Object.entries(result.results)) {
-         resultMessage += `   • ${nodeId}: ${output}\n`;
-      }
-
-      alert(resultMessage);
+      // 4. Show Modal instead of Alert
+      setModalState({ isOpen: true, data: result, error: null });
 
     } catch (error) {
       console.error('Error submitting pipeline:', error);
-      alert(`❌ Error submitting pipeline: ${error.message}\n\nMake sure the backend server is running on http://localhost:8000`);
+      setModalState({
+        isOpen: true,
+        data: null,
+        error: `${error.message}. Make sure the backend server is running on http://localhost:8000`
+      });
     }
   };
 
   return (
-    <div style={{
-      padding: 'var(--space-lg)',
-      backgroundColor: 'var(--bg-primary)',
-      borderTop: '1px solid var(--border-light)',
-      display: 'flex',
-      justifyContent: 'center',
-      alignItems: 'center',
-      gap: 'var(--space-md)'
-    }}>
+    <>
+      <PipelineResultsModal
+        isOpen={modalState.isOpen}
+        onClose={() => setModalState({ ...modalState, isOpen: false })}
+        results={modalState.data}
+        error={modalState.error}
+      />
       <div style={{
-        fontSize: 'var(--font-size-sm)',
-        color: 'var(--text-secondary)',
-        textAlign: 'center'
+        padding: 'var(--space-lg)',
+        backgroundColor: 'var(--bg-primary)',
+        borderTop: '1px solid var(--border-light)',
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        gap: 'var(--space-md)'
       }}>
-        <div>Nodes: {nodes.length} | Edges: {edges.length}</div>
+        <div style={{
+          fontSize: 'var(--font-size-sm)',
+          color: 'var(--text-secondary)',
+          textAlign: 'center'
+        }}>
+          <div>Nodes: {nodes.length} | Edges: {edges.length}</div>
+        </div>
+        <button
+          onClick={handleSubmit}
+          disabled={nodes.length === 0}
+          style={{
+            backgroundColor: nodes.length === 0 ? 'var(--text-muted)' : 'var(--primary-color)',
+            color: 'var(--text-white)',
+            border: 'none',
+            padding: 'var(--space-md) var(--space-xl)',
+            borderRadius: 'var(--radius-lg)',
+            fontSize: 'var(--font-size-md)',
+            fontWeight: 'var(--font-weight-medium)',
+            cursor: nodes.length === 0 ? 'not-allowed' : 'pointer',
+            boxShadow: 'var(--shadow-sm)',
+            transition: 'all 0.2s ease-in-out',
+            minWidth: '140px'
+          }}
+          onMouseEnter={(e) => {
+            if (nodes.length > 0) {
+              e.target.style.backgroundColor = 'var(--primary-dark)';
+              e.target.style.transform = 'translateY(-1px)';
+              e.target.style.boxShadow = 'var(--shadow-md)';
+            }
+          }}
+          onMouseLeave={(e) => {
+            if (nodes.length > 0) {
+              e.target.style.backgroundColor = 'var(--primary-color)';
+              e.target.style.transform = 'translateY(0)';
+              e.target.style.boxShadow = 'var(--shadow-sm)';
+            }
+          }}
+        >
+          ▶️ Run Pipeline
+        </button>
       </div>
-      <button
-        onClick={handleSubmit}
-        disabled={nodes.length === 0}
-        style={{
-          backgroundColor: nodes.length === 0 ? 'var(--text-muted)' : 'var(--primary-color)',
-          color: 'var(--text-white)',
-          border: 'none',
-          padding: 'var(--space-md) var(--space-xl)',
-          borderRadius: 'var(--radius-lg)',
-          fontSize: 'var(--font-size-md)',
-          fontWeight: 'var(--font-weight-medium)',
-          cursor: nodes.length === 0 ? 'not-allowed' : 'pointer',
-          boxShadow: 'var(--shadow-sm)',
-          transition: 'all 0.2s ease-in-out',
-          minWidth: '140px'
-        }}
-        onMouseEnter={(e) => {
-          if (nodes.length > 0) {
-            e.target.style.backgroundColor = 'var(--primary-dark)';
-            e.target.style.transform = 'translateY(-1px)';
-            e.target.style.boxShadow = 'var(--shadow-md)';
-          }
-        }}
-        onMouseLeave={(e) => {
-          if (nodes.length > 0) {
-            e.target.style.backgroundColor = 'var(--primary-color)';
-            e.target.style.transform = 'translateY(0)';
-            e.target.style.boxShadow = 'var(--shadow-sm)';
-          }
-        }}
-      >
-        ▶️ Run Pipeline
-      </button>
-    </div>
+    </>
   );
 }

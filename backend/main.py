@@ -161,12 +161,17 @@ def execute_pipeline(pipeline: str = Form(...)): # Accept pipeline as a string
 
             # --- NODE LOGIC HANDLERS ---
             
-            if 'Input' in node_type or 'input' in node_id: # Heuristic for Input Node
+            # Normalize type for checks
+            node_type = node_type.lower() if node_type else ''
+            
+            # --- NODE LOGIC HANDLERS ---
+            
+            if 'input' in node_type or 'input' in node_id: # Heuristic for Input Node
                 # Logic: Return the user-provided input, or default
                 # The frontend sends inputs keyed by node ID
                 results[node_id] = inputs.get(node_id, "Default Input")
             
-            elif 'Text' in node_type:
+            elif 'text' in node_type:
                 # Logic: Replace {{variables}}
                 # 'currText' is where the template is
                 text_template = node['data'].get('currText', '')
@@ -185,7 +190,7 @@ def execute_pipeline(pipeline: str = Form(...)): # Accept pipeline as a string
                 
                 results[node_id] = final_text
 
-            elif 'Transform' in node_type:
+            elif 'transform' in node_type:
                 # Logic: Apply transformation
                 # Takes the first available input
                 input_val = next(iter(node_inputs.values()), "")
@@ -201,24 +206,30 @@ def execute_pipeline(pipeline: str = Form(...)): # Accept pipeline as a string
                 else:
                     results[node_id] = input_val
 
-            elif 'Math' in node_type:
-                 # Should logic be executed? 
-                 # In mathNode.js, it seems to handle its own logic internally for static values?
-                 # But if we connect inputs...
-                 # The handles are `${props.id}-input1` and `${props.id}-input2`
-                 
+            elif 'math' in node_type:
                  op = node['data'].get('operation', 'add')
                  
                  # Default operands from state
-                 val1 = float(node['data'].get('operand1', 0))
-                 val2 = float(node['data'].get('operand2', 0))
+                 try:
+                    val1 = float(node['data'].get('operand1', 0))
+                 except:
+                    val1 = 0.0
+                    
+                 try:
+                    val2 = float(node['data'].get('operand2', 0))
+                 except:
+                    val2 = 0.0
                  
                  # Override with connected inputs if they exist
+                 # Debug: print(f"Processing Math node {node_id}, inputs: {node_inputs}")
                  for handle, val in node_inputs.items():
-                     if 'input1' in handle:
+                     if not handle: continue
+                     
+                     # Ensure we are matching the correct handle suffix
+                     if handle.endswith('-input1'):
                          try: val1 = float(val)
                          except: pass
-                     elif 'input2' in handle:
+                     elif handle.endswith('-input2'):
                          try: val2 = float(val)
                          except: pass
                 
@@ -227,14 +238,15 @@ def execute_pipeline(pipeline: str = Form(...)): # Accept pipeline as a string
                  elif op == 'subtract': res = val1 - val2
                  elif op == 'multiply': res = val1 * val2
                  elif op == 'divide': res = val1 / val2 if val2 != 0 else 0
+                 elif op == 'power': res = pow(val1, val2)
                  
                  results[node_id] = res
 
-            elif 'LLM' in node_type:
+            elif 'llm' in node_type:
                 # Mock LLM
                 results[node_id] = "This is a mock LLM response."
 
-            elif 'Output' in node_type:
+            elif 'output' in node_type:
                # Just pass through the input value
                results[node_id] = next(iter(node_inputs.values()), "No Output")
             
@@ -244,7 +256,10 @@ def execute_pipeline(pipeline: str = Form(...)): # Accept pipeline as a string
 
         return {
             'status': 'success',
-            'results': results
+            'results': results,
+            'num_nodes': len(nodes),
+            'num_edges': len(edges),
+            'is_dag': True 
         }
 
     except Exception as e:
