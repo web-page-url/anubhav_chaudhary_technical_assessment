@@ -50,25 +50,13 @@ export const TimerNode = createNodeClass({
             min="0"
             value={this.state.delay}
             onChange={handleDelayChange}
-            style={{
-              width: '50px',
-              padding: '2px 4px',
-              border: '1px solid #e91e63',
-              borderRadius: '3px',
-              fontSize: '11px',
-              textAlign: 'center'
-            }}
+            className="node-input-field"
+            style={{ width: '60px' }}
           />
           <select
             value={this.state.unit}
             onChange={handleUnitChange}
-            style={{
-              padding: '2px 4px',
-              border: '1px solid #e91e63',
-              borderRadius: '3px',
-              fontSize: '10px',
-              backgroundColor: '#fce4ec'
-            }}
+            className="node-input-field"
           >
             {units.map(unit => (
               <option key={unit.value} value={unit.value}>{unit.label}</option>

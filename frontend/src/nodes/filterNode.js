@@ -54,13 +54,7 @@ export const FilterNode = createNodeClass({
         <select
           value={this.state.condition}
           onChange={handleConditionChange}
-          style={{
-            padding: '2px 4px',
-            border: '1px solid #ff9800',
-            borderRadius: '3px',
-            fontSize: '11px',
-            backgroundColor: '#fff8e1'
-          }}
+          className="node-input-field"
         >
           {conditions.map(cond => (
             <option key={cond.value} value={cond.value}>{cond.label}</option>
@@ -71,12 +65,7 @@ export const FilterNode = createNodeClass({
           placeholder="Filter value"
           value={this.state.filterValue}
           onChange={handleFilterValueChange}
-          style={{
-            padding: '2px 4px',
-            border: '1px solid #ccc',
-            borderRadius: '3px',
-            fontSize: '11px'
-          }}
+          className="node-input-field"
         />
         <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '10px', color: '#666' }}>
           <span>Pass →</span>

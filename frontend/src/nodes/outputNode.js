@@ -41,13 +41,7 @@ export const OutputNode = createNodeClass({
             type="text"
             value={this.state.currName}
             onChange={handleNameChange}
-            style={{
-              marginTop: '2px',
-              padding: '4px 8px',
-              border: '1px solid #ccc',
-              borderRadius: '4px',
-              fontSize: '12px'
-            }}
+            className="node-input-field"
           />
         </label>
         <label style={{
@@ -60,13 +54,7 @@ export const OutputNode = createNodeClass({
           <select
             value={this.state.outputType}
             onChange={handleTypeChange}
-            style={{
-              marginTop: '2px',
-              padding: '4px 8px',
-              border: '1px solid #ccc',
-              borderRadius: '4px',
-              fontSize: '12px'
-            }}
+            className="node-input-field"
           >
             <option value="Text">Text</option>
             <option value="File">Image</option>

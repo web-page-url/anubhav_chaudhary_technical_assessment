@@ -106,7 +106,7 @@ export const TextNode = createNodeClass({
             style={{
               marginTop: 'var(--space-xs)',
               padding: 'var(--space-sm)',
-              border: '1px solid var(--border-light)',
+              border: '1px solid rgba(0, 0, 0, 0.1)',
               borderRadius: 'var(--radius-md)',
               fontSize: 'var(--font-size-sm)',
               fontFamily: 'inherit',
@@ -115,8 +115,9 @@ export const TextNode = createNodeClass({
               width: '100%',
               lineHeight: 1.4,
               outline: 'none',
-              transition: 'border-color 0.2s ease',
-              overflow: 'hidden'
+              transition: 'all 0.2s ease',
+              overflow: 'hidden',
+              backgroundColor: 'rgba(255, 255, 255, 0.4)'
             }}
             onFocus={(e) => {
               e.target.style.borderColor = 'var(--primary-color)';

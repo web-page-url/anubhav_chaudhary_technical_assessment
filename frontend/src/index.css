@@ -171,11 +171,37 @@ code {
 }
 
 /* Hide native number input spinners */
-input[type=number]::-webkit-inner-spin-button, 
-input[type=number]::-webkit-outer-spin-button { 
-  -webkit-appearance: none; 
-  margin: 0; 
+input[type=number]::-webkit-inner-spin-button,
+input[type=number]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
 }
+
 input[type=number] {
   -moz-appearance: textfield;
+  appearance: textfield;
+}
+
+/* Node Input Styles */
+.node-input-field {
+  background-color: rgba(255, 255, 255, 0.4) !important;
+  border: 1px solid rgba(0, 0, 0, 0.1) !important;
+  border-radius: var(--radius-sm);
+  padding: 4px 8px;
+  font-size: var(--font-size-xs);
+  color: var(--text-primary);
+  width: 100%;
+  transition: all 0.2s ease;
+}
+
+.node-input-field:focus {
+  outline: none;
+  background-color: rgba(255, 255, 255, 0.6) !important;
+  border-color: var(--primary-color) !important;
+  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.1);
+}
+
+.node-input-field option {
+  background-color: white;
+  color: var(--text-primary);
 }

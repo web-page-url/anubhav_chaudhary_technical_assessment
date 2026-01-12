@@ -58,14 +58,7 @@ export const ConditionNode = createNodeClass({
         <select
           value={this.state.operator}
           onChange={handleOperatorChange}
-          style={{
-            padding: '2px 6px',
-            border: '1px solid #9c27b0',
-            borderRadius: '3px',
-            fontSize: '11px',
-            backgroundColor: '#f8f5ff',
-            width: '100%'
-          }}
+          className="node-input-field"
         >
           {operators.map(op => (
             <option key={op.value} value={op.value}>{op.label}</option>
@@ -76,14 +69,8 @@ export const ConditionNode = createNodeClass({
           placeholder="Value"
           value={this.state.compareValue}
           onChange={handleCompareValueChange}
-          style={{
-            padding: '2px 4px',
-            border: '1px solid #ccc',
-            borderRadius: '3px',
-            fontSize: '11px',
-            width: '100%',
-            textAlign: 'center'
-          }}
+          className="node-input-field"
+          style={{ textAlign: 'center' }}
         />
 
 

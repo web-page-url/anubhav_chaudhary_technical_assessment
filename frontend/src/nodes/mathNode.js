@@ -69,10 +69,6 @@ export const MathNode = createNodeClass({
 
     const inputStyle = {
       width: '60px',
-      padding: '4px',
-      border: '1px solid var(--border-medium)',
-      borderRadius: '4px',
-      fontSize: '12px',
       textAlign: 'center'
     };
 
@@ -86,6 +82,7 @@ export const MathNode = createNodeClass({
             value={this.state[key]}
             onChange={(e) => handleOperandChange(key, e)}
             style={inputStyle}
+            className="node-input-field"
           />
           <button onClick={() => adjustOperand(key, 1)} style={buttonStyle}>+</button>
         </div>
@@ -99,13 +96,7 @@ export const MathNode = createNodeClass({
           <select
             value={this.state.operation}
             onChange={handleOperationChange}
-            style={{
-              padding: '6px',
-              border: '1px solid var(--border-medium)',
-              borderRadius: 'var(--radius-sm)',
-              fontSize: '12px',
-              backgroundColor: 'var(--bg-primary)'
-            }}
+            className="node-input-field"
           >
             {operations.map(op => (
               <option key={op.value} value={op.value}>{op.label} ({op.value})</option>

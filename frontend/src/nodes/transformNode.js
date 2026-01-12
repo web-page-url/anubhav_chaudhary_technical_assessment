@@ -42,14 +42,7 @@ export const TransformNode = createNodeClass({
         <select
           value={this.state.transformation}
           onChange={handleTransformationChange}
-          style={{
-            padding: '4px 8px',
-            border: '1px solid #2196f3',
-            borderRadius: '4px',
-            fontSize: '12px',
-            backgroundColor: '#f3f9ff',
-            minWidth: '120px'
-          }}
+          className="node-input-field"
         >
           {transformations.map(trans => (
             <option key={trans.value} value={trans.value}>{trans.label}</option>

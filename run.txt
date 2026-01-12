@@ -1,0 +1,59 @@
+# Project Run Instructions
+
+## Prerequisites
+- Node.js (v14 or higher)
+- Python (v3.8 or higher)
+
+## 1. Backend Setup (FastAPI)
+The backend handles pipeline parsing and execution logic.
+
+1. Navigate to the backend directory:
+   cd backend
+
+2. Install dependencies (it is recommended to use a virtual environment):
+   pip install fastapi uvicorn
+
+3. Start the server:
+   python -m uvicorn main:app --reload --port 8000
+
+The backend will run on http://localhost:8000.
+
+## 2. Frontend Setup (React)
+The frontend provides the visual pipeline builder.
+
+1. Navigate to the frontend directory:
+   cd frontend
+
+2. Install dependencies:
+   npm install
+
+3. Start the development server:
+   npm start
+
+The application will open at http://localhost:3000.
+
+## 3. Usage & Features
+
+### Creating Pipelines
+- Drag and drop nodes from the **Node Library** toolbar.
+- Connect nodes by dragging wires from source handles (right) to target handles (left).
+- **New Nodes Available:**
+  - **Math**: Perform operations (+, -, *, /, ^) on inputs or values.
+  - **Condition**: Logic gate (True/False paths).
+  - **Transform**: Modify text (Uppercase, Reverse, Trim, etc.).
+  - **Filter**: Pass data conditionally based on a filter value.
+  - **Timer**: Simulate delays.
+
+### Running Pipelines
+1. Click the **"Run Pipeline"** button at the bottom of the screen.
+2. If you have any **Input Nodes**, you will be prompted to enter values for them.
+3. The pipeline executes on the backend.
+4. A **Results Modal** will appear showing:
+   - Whether the pipeline is a valid DAG (Directed Acyclic Graph).
+   - Number of nodes and edges.
+   - Execution time.
+   - Outputs for every node (Output nodes are highlighted).
+
+### Managing Nodes
+- **Delete**: Hover over any node and click the **"×"** button in the top-right corner to remove it (and its connections).
+- **Text Node**: Type `{{variableName}}` inside a Text Node to dynamically create an input handle for that variable.
